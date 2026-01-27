@@ -10,24 +10,26 @@ const seedDatabase = async () => {
     await db.sequelize.sync();
 
     // Verificar si ya existe un administrador
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD ;
     const adminExistente = await db.Administrador.findOne({
-      where: { correo: 'admin@tienda.com' }
+      where: { correo: adminEmail }
     });
 
     if (adminExistente) {
       console.log('ℹ️  El administrador ya existe en la base de datos');
       console.log('\n📋 Datos de acceso:');
-      console.log('   Email: admin@tienda.com');
-      console.log('   Password: admin123');
+      console.log(`   Email: ${adminEmail}`);
+      console.log(`   Password: ${adminPassword}`);
       process.exit(0);
     }
 
     // Crear administrador
     console.log('👤 Creando administrador...');
-    const passwordHash = await bcrypt.hash('admin123', 10);
+    const passwordHash = await bcrypt.hash(adminPassword, 10);
     await db.Administrador.create({
       nombre: 'Administrador',
-      correo: 'admin@tienda.com',
+      correo: adminEmail,
       claveHash: passwordHash,
       rol: 'admin',
       activo: true
@@ -36,8 +38,8 @@ const seedDatabase = async () => {
 
     console.log('\n🎉 Seed completado exitosamente!');
     console.log('\n📋 Datos de acceso:');
-    console.log('   Email: admin@tienda.com');
-    console.log('   Password: admin123');
+    console.log(`   Email: ${adminEmail}`);
+    console.log(`   Password: ${adminPassword}`);
     console.log('\n📝 Nota: Los demás datos (categorías, proveedores, productos, clientes y órdenes)');
     console.log('   deben ser registrados a través del panel de administración.');
 
